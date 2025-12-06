@@ -29,6 +29,11 @@ struct pillar {
     Vector2 bottomPipeShaftPositions[10];
 };
 
+struct tree {
+    int treeTopRadius;
+    Rectangle treeTrunk;
+};
+
 int main(void) {
     int screenHeight = 640;
     int screenWidth = 480;
@@ -40,6 +45,7 @@ int main(void) {
     int enemyCounter = 0;
     int pillarCounter = 0;
     int pillarRandomHeight = 0;
+    int treeCounter = 0;
     int jumpCounter = 0;
     int jumpSpeed = 5;
     int fallSpeed = 1;
@@ -58,15 +64,15 @@ int main(void) {
     Texture2D pipeShaft = LoadTexture("./topPipeShaft.png");
 
     struct pillar pillars[10000] = {0};
-
+    struct tree trees[10000] = {0};
     //initialize everything
     for(int i = 0; i < 10000; i++) {
         bombs[i].bombRect = (Rectangle){screenWidth,GetRandomValue(0, GetScreenHeight()),32,32};
         bombs[i].bombTex = bombTex;
         bombs[i].isActive = false;
-        pillars[i].topRect = (Rectangle){screenWidth, 0, 32, screenHeight/4};
-        pillars[i].midRect = (Rectangle){screenWidth, pillars[i].topRect.height, 32, 128};
-        pillars[i].bottomRect = (Rectangle){screenWidth, pillars[i].topRect.height + 128, 32, screenHeight / 2 };
+        pillars[i].topRect = (Rectangle){screenWidth + 64, 0, 32, screenHeight/4};
+        pillars[i].midRect = (Rectangle){screenWidth + 64,  pillars[i].topRect.height, 32, 128};
+        pillars[i].bottomRect = (Rectangle){screenWidth + 64, pillars[i].topRect.height + 128, 32, screenHeight / 2 };
         pillars[i].isActive = false;
         pillars[i].isMidRectActive = false;
         pillars[i].topRectHit = false;
@@ -83,6 +89,8 @@ int main(void) {
             pillars[i].topPipeShaftPositions[k] = (Vector2){pillars[i].topPipePosition.x, (pillars[i].topPipePosition.y - 32) - (k * 32)};
             pillars[i].bottomPipeShaftPositions[k] = (Vector2){pillars[i].bottomPipePosition.x, (pillars[i].bottomPipePosition.y + 32) + (k * 32)};
         }
+        trees[i].treeTopRadius = GetRandomValue(64, 128);
+        trees[i].treeTrunk = (Rectangle){ screenWidth + 64, GetRandomValue(320, screenHeight), 32, screenHeight / 2};
     }
 
     while (!WindowShouldClose())
@@ -108,6 +116,9 @@ int main(void) {
                     pillars[pillarCounter].topPipeShaftPositions[k] = (Vector2){pillars[pillarCounter].topPipePosition.x, (pillars[pillarCounter].topPipePosition.y - 32) - (k * 32)};
                     pillars[pillarCounter].bottomPipeShaftPositions[k] = (Vector2){pillars[pillarCounter].bottomPipePosition.x, (pillars[pillarCounter].bottomPipePosition.y + 32) + (k * 32)};
                 }
+            }
+            if(enemyCounter % GetRandomValue(1, 16) == 0) {
+                
             }
             enemyCounter++;
         }
