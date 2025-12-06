@@ -9,9 +9,9 @@ this is just a project to help me understand a programs life cycle and also vers
 ### Music
 - [ ] 1 track
 ### Art
-- [ ] 1 animated sprite
-- [ ] bomb sprite
-- [ ] pipe sprites
+- [x] 1 animated sprite
+- [x] bomb sprite
+- [x] pipe sprites
 ### Programming
-- [ ] Parallax background
-- [ ] special move to deflect bombs
+- [x] Parallax background
+- [x] special move to deflect bombs

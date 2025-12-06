@@ -3,6 +3,8 @@
 struct bird {
     Rectangle birdRect;
     Texture2D birdTex;
+    int specialRadius;
+    bool specialAction;
 };
 
 struct bomb {
@@ -55,7 +57,7 @@ int main(void) {
     int health = 0;
 
     Texture2D playerTex = LoadTexture("./bird.png");
-    struct bird Player = {(Rectangle){128, 128, 32, 32}, playerTex};
+    struct bird Player = {(Rectangle){128, 128, 32, 32}, playerTex, 48, false};
 
     Texture2D bombTex = LoadTexture("./bomb.png");
     struct bomb bombs[10000] = {0};
@@ -134,6 +136,9 @@ int main(void) {
                     health -= 1;
                     bombs[i].isActive = false;
                 }
+                if(CheckCollisionCircleRec((Vector2){Player.birdRect.x, Player.birdRect.y}, Player.specialRadius, bombs[i].bombRect) && Player.specialAction == true) {
+                    bombs[i].isActive = false;
+                }
 
                 if(CheckCollisionRecs(bombs[i].bombRect, pillars[i].topRect) && pillars[i].isActive == true)
                     bombs[i].isActive = false;
@@ -180,6 +185,8 @@ int main(void) {
             }
         }
 
+        
+
         if(IsKeyDown(KEY_SPACE)) {
             Player.birdRect.y -= jumpSpeed;
             jumpCounter++;
@@ -197,27 +204,38 @@ int main(void) {
             Player.birdRect.y += 3;
         }
 
+        if(IsKeyDown(KEY_D)) {
+            Player.specialAction = true;
+        }
+
+        if(IsKeyReleased(KEY_D)) {
+            Player.specialAction = false;
+        }
+
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
-
+            DrawRectangle(0, screenWidth - 96, screenHeight, 96, DARKGREEN);
             for(int i = 0; i < 10000; i++) {
 
                 if(trees[i].isActive == true) {
                     DrawRectangleRec(trees[i].treeTrunk, BROWN);
                     DrawCircle(trees[i].treeTrunk.x + (trees[i].treeTrunk.width / 2), trees[i].treeTrunk.y, trees[i].treeTopRadius, DARKGREEN);
                 }
-                
+            }
+
+            for(int i = 0; i < 10000; i++) {
+
                 if(bombs[i].isActive == true) {
                     DrawTexture(bombs[i].bombTex, bombs[i].bombRect.x, bombs[i].bombRect.y, WHITE);
                 }
 
-                if(pillars[i].isMidRectActive == true)
-                    DrawRectangleRec(pillars[i].midRect, GREEN);
+                // if(pillars[i].isMidRectActive == true)
+                    // DrawRectangleRec(pillars[i].midRect, GREEN);
 
                 if(pillars[i].isActive == true) {
-                    DrawRectangleRec(pillars[i].topRect, ORANGE);
-                    DrawRectangleRec(pillars[i].bottomRect, ORANGE);
+                    // DrawRectangleRec(pillars[i].topRect, ORANGE);
+                    // DrawRectangleRec(pillars[i].bottomRect, ORANGE);
                     DrawTexture(pillars[i].topPipe, pillars[i].topPipePosition.x, pillars[i].topPipePosition.y, WHITE);
                     DrawTexture(pillars[i].bottomPipe, pillars[i].bottomPipePosition.x, pillars[i].bottomPipePosition.y, WHITE);
                     for(int k = 0; k < 10; k++) {
@@ -225,6 +243,10 @@ int main(void) {
                         DrawTextureV(pillars[i].bottomPipeShafts[k], pillars[i].bottomPipeShaftPositions[k], WHITE);
                     }
                 }
+            }
+
+            if(Player.specialAction == true) {
+                DrawCircle(Player.birdRect.x, Player.birdRect.y, Player.specialRadius, DARKPURPLE);
             }
 
             DrawTexture(Player.birdTex, Player.birdRect.x, Player.birdRect.y, WHITE);
