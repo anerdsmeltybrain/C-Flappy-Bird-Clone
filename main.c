@@ -32,6 +32,7 @@ struct pillar {
 struct tree {
     int treeTopRadius;
     Rectangle treeTrunk;
+    bool isActive;
 };
 
 int main(void) {
@@ -90,7 +91,8 @@ int main(void) {
             pillars[i].bottomPipeShaftPositions[k] = (Vector2){pillars[i].bottomPipePosition.x, (pillars[i].bottomPipePosition.y + 32) + (k * 32)};
         }
         trees[i].treeTopRadius = GetRandomValue(64, 128);
-        trees[i].treeTrunk = (Rectangle){ screenWidth + 64, GetRandomValue(320, screenHeight), 32, screenHeight / 2};
+        trees[i].treeTrunk = (Rectangle){ screenWidth + 64, GetRandomValue(64, 320), 32, screenHeight};
+        trees[i].isActive = false;
     }
 
     while (!WindowShouldClose())
@@ -117,8 +119,10 @@ int main(void) {
                     pillars[pillarCounter].bottomPipeShaftPositions[k] = (Vector2){pillars[pillarCounter].bottomPipePosition.x, (pillars[pillarCounter].bottomPipePosition.y + 32) + (k * 32)};
                 }
             }
-            if(enemyCounter % GetRandomValue(1, 16) == 0) {
-                
+            if(enemyCounter % GetRandomValue(1, 2) == 0) {
+                trees[treeCounter].isActive = true;
+                treeCounter++;
+                trees[treeCounter].treeTopRadius = GetRandomValue(64, 320);
             }
             enemyCounter++;
         }
@@ -170,6 +174,10 @@ int main(void) {
                     bombs[i].isActive = false;
                 }
             }
+
+            if(trees[i].isActive == true) {
+                trees[i].treeTrunk.x -= 2;
+            }
         }
 
         if(IsKeyDown(KEY_SPACE)) {
@@ -192,9 +200,14 @@ int main(void) {
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
-            DrawTexture(Player.birdTex, Player.birdRect.x, Player.birdRect.y, WHITE);
 
             for(int i = 0; i < 10000; i++) {
+
+                if(trees[i].isActive == true) {
+                    DrawRectangleRec(trees[i].treeTrunk, BROWN);
+                    DrawCircle(trees[i].treeTrunk.x + (trees[i].treeTrunk.width / 2), trees[i].treeTrunk.y, trees[i].treeTopRadius, DARKGREEN);
+                }
+                
                 if(bombs[i].isActive == true) {
                     DrawTexture(bombs[i].bombTex, bombs[i].bombRect.x, bombs[i].bombRect.y, WHITE);
                 }
@@ -213,6 +226,8 @@ int main(void) {
                     }
                 }
             }
+
+            DrawTexture(Player.birdTex, Player.birdRect.x, Player.birdRect.y, WHITE);
 
             DrawText(TextFormat("frames counter: %d", framesCounter), 0, 0, 16, BLACK);
             DrawText(TextFormat("enemy counter: %d", enemyCounter), 0, 16, 16, BLACK);
